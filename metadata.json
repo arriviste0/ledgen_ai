@@ -1,0 +1,7 @@
+{
+  "name": "LeadGen Maps",
+  "description": "An AI-powered lead generator that uses Google Maps grounding to find up-to-date and accurate information about local businesses. Simply enter a business type and location to generate a list of potential leads.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
