@@ -7,6 +7,7 @@ interface LeadCardProps {
     lead: Lead;
     onUpdateStatus: (id: number, status: LeadStatus) => void;
     requirements: string;
+    onSelect: (lead: Lead) => void;
 }
 
 const statusColors: Record<LeadStatus, string> = {
@@ -16,16 +17,23 @@ const statusColors: Record<LeadStatus, string> = {
     'Not Interested': 'bg-red-500',
 };
 
-const LeadCard: React.FC<LeadCardProps> = ({ lead, onUpdateStatus, requirements }) => {
+const LeadCard: React.FC<LeadCardProps> = ({ lead, onUpdateStatus, requirements, onSelect }) => {
     return (
-        <div className="bg-[#1A1A1A] border-2 border-gray-800 rounded-xl shadow-lg p-6 flex flex-col h-full transition-all duration-200 ease-in-out hover:border-[#C0A062] hover:shadow-[8px_8px_0px_#000] hover:-translate-x-2 hover:-translate-y-2">
+        <div 
+            onClick={() => onSelect(lead)}
+            className="bg-[#1A1A1A] border-2 border-gray-800 rounded-xl shadow-lg p-6 flex flex-col h-full transition-all duration-200 ease-in-out hover:border-[#C0A062] hover:shadow-[8px_8px_0px_#C0A062] hover:-translate-x-2 hover:-translate-y-2 cursor-pointer group"
+        >
             <div className="flex-grow">
                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-bold text-gray-100 break-words pr-2">{lead.name}</h3>
+                    <h3 className="text-2xl font-bold text-gray-100 break-words pr-2 group-hover:text-[#C0A062] transition-colors">{lead.name}</h3>
                     <select
                         value={lead.status}
-                        onChange={(e) => onUpdateStatus(lead.id, e.target.value as LeadStatus)}
-                        className="text-sm font-semibold bg-[#121212] border border-gray-700 rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-[#C0A062] text-gray-200"
+                        onChange={(e) => {
+                            e.stopPropagation();
+                            onUpdateStatus(lead.id, e.target.value as LeadStatus)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm font-semibold bg-[#121212] border border-gray-700 rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-[#C0A062] text-gray-200 cursor-pointer"
                         aria-label="Lead Status"
                     >
                         <option>New</option>
@@ -48,7 +56,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onUpdateStatus, requirements 
                     {lead.phone && (
                         <div className="flex items-center gap-3">
                             <PhoneIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                            <a href={`tel:${lead.phone}`} className="hover:underline hover:text-[#C0A062] transition-colors">{lead.phone}</a>
+                            <a href={`tel:${lead.phone}`} onClick={e => e.stopPropagation()} className="hover:underline hover:text-[#C0A062] transition-colors">{lead.phone}</a>
                         </div>
                     )}
                      {lead.rating !== null && lead.rating !== undefined && (
@@ -77,6 +85,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onUpdateStatus, requirements 
                         href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
                         className="flex items-center gap-2 font-bold text-gray-300 hover:text-[#C0A062] transition-colors"
                     >
                         <GlobeAltIcon className="w-5 h-5" />

@@ -5,6 +5,10 @@ import LeadForm from './components/LeadForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import StrategyAssistant from './components/StrategyAssistant';
 import { CompassIcon } from './components/icons';
+import GlobeView from './components/GlobeView';
+import LeadDetailModal from './components/LeadDetailModal';
+
+type ViewMode = 'list' | 'globe';
 
 const App: React.FC = () => {
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -12,6 +16,8 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [formRequirements, setFormRequirements] = useState('');
+    const [viewMode, setViewMode] = useState<ViewMode>('list');
+    const [selectedLeadForModal, setSelectedLeadForModal] = useState<Lead | null>(null);
 
 
     const [strategy, setStrategy] = useState<Strategy | null>(null);
@@ -61,6 +67,7 @@ const App: React.FC = () => {
         setLeads([]);
         setSources([]);
         setFormRequirements(requirements);
+        setViewMode('list');
 
         try {
             const result = await generateLeads({ businessType, location, numberOfLeads, requirements, coordinates });
@@ -88,12 +95,21 @@ const App: React.FC = () => {
                 lead.id === id ? { ...lead, status } : lead
             )
         );
+        setSelectedLeadForModal(prev => prev && prev.id === id ? { ...prev, status } : prev);
+    }, []);
+
+    const handleSelectLead = useCallback((lead: Lead) => {
+        setSelectedLeadForModal(lead);
+    }, []);
+    
+    const handleCloseModal = useCallback(() => {
+        setSelectedLeadForModal(null);
     }, []);
     
     const exportToCSV = useCallback(() => {
         if (leads.length === 0) return;
 
-        const headers = ['Name', 'Category', 'Address', 'Phone', 'Website', 'Rating', 'Reviews Count', 'Opening Hours', 'Status'];
+        const headers = ['Name', 'Category', 'Address', 'Phone', 'Website', 'Rating', 'Reviews Count', 'Opening Hours', 'Status', 'Latitude', 'Longitude'];
         const csvRows = [
             headers.join(','),
             ...leads.map(lead => [
@@ -106,6 +122,8 @@ const App: React.FC = () => {
                 lead.reviewsCount ?? '',
                 `"${lead.openingHours?.replace(/"/g, '""') ?? ''}"`,
                 lead.status,
+                lead.latitude ?? '',
+                lead.longitude ?? ''
             ].join(','))
         ];
 
@@ -155,20 +173,41 @@ const App: React.FC = () => {
                             initialData={formInitialData}
                         />
                     </div>
-                    <ResultsDisplay
-                        leads={leads}
-                        sources={sources}
-                        isLoading={isLoading}
-                        error={error}
-                        onUpdateStatus={handleUpdateLeadStatus}
-                        onExport={exportToCSV}
-                        requirements={formRequirements}
-                    />
+                    {viewMode === 'list' && (
+                        <ResultsDisplay
+                            leads={leads}
+                            sources={sources}
+                            isLoading={isLoading}
+                            error={error}
+                            onUpdateStatus={handleUpdateLeadStatus}
+                            onExport={exportToCSV}
+                            requirements={formRequirements}
+                            viewMode={viewMode}
+                            onViewChange={setViewMode}
+                            onSelectLead={handleSelectLead}
+                        />
+                    )}
+                     {viewMode === 'globe' && leads.length > 0 && (
+                        <GlobeView 
+                           leads={leads}
+                           onSelectLead={handleSelectLead}
+                           viewMode={viewMode}
+                           onViewChange={setViewMode}
+                        />
+                    )}
                 </main>
                  <footer className="text-center mt-16 text-gray-600 text-sm">
                     <p>&copy; {new Date().getFullYear()} LeadGen Maps. Powered by Gemini.</p>
                 </footer>
             </div>
+            {selectedLeadForModal && (
+                <LeadDetailModal
+                    lead={selectedLeadForModal}
+                    onClose={handleCloseModal}
+                    onUpdateStatus={handleUpdateLeadStatus}
+                    requirements={formRequirements}
+                />
+            )}
         </div>
     );
 };

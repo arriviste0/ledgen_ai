@@ -11,6 +11,8 @@ export interface Lead {
   reviewsCount?: number;
   openingHours?: string;
   status: LeadStatus;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface MapInfo {
