@@ -21,3 +21,9 @@ export interface MapInfo {
 export interface GroundingChunk {
   maps: MapInfo;
 }
+
+export interface VerificationResult {
+  meetsRequirement: boolean;
+  justification: string;
+  applicationUrl?: string | null;
+}

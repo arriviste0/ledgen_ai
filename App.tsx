@@ -11,6 +11,8 @@ const App: React.FC = () => {
     const [sources, setSources] = useState<GroundingChunk[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [formRequirements, setFormRequirements] = useState('');
+
 
     const [strategy, setStrategy] = useState<Strategy | null>(null);
     const [strategyLoading, setStrategyLoading] = useState<boolean>(false);
@@ -58,6 +60,7 @@ const App: React.FC = () => {
         setError(null);
         setLeads([]);
         setSources([]);
+        setFormRequirements(requirements);
 
         try {
             const result = await generateLeads({ businessType, location, numberOfLeads, requirements, coordinates });
@@ -120,19 +123,17 @@ const App: React.FC = () => {
 
 
     return (
-        <div className="min-h-screen bg-yellow-300 text-black font-mono flex flex-col items-center p-4 sm:p-6 md:p-8">
-            <div className="w-full max-w-5xl mx-auto">
-                <header className="text-center mb-10">
-                    <div className="inline-block bg-white p-4 border-4 border-black shadow-[8px_8px_0_0_#000]">
-                       <div className="flex items-center justify-center gap-4">
-                            <CompassIcon className="w-12 h-12 text-black" />
-                            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-                                LeadGen Maps
-                            </h1>
-                            <span className="bg-yellow-300 text-black text-sm font-bold border-2 border-black px-2 py-1 tracking-widest -ml-2">PRO</span>
-                        </div>
+        <div className="min-h-screen bg-[#121212] text-gray-200 antialiased flex flex-col items-center p-4 sm:p-6 md:p-8">
+            <div className="w-full max-w-6xl mx-auto">
+                <header className="text-center mb-12">
+                     <div className="flex items-center justify-center gap-4 mb-4">
+                        <CompassIcon className="w-10 h-10 text-[#C0A062]" />
+                        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-400">
+                            LeadGen Maps
+                        </h1>
+                        <span className="bg-[#C0A062] text-black text-xs font-bold px-2 py-1 rounded-md tracking-wider -ml-2">PRO</span>
                     </div>
-                     <p className="text-black text-lg mt-4 max-w-3xl mx-auto">
+                     <p className="text-gray-400 text-lg max-w-3xl mx-auto">
                         Your advanced tool for high-quality local business leads. Specify your needs, generate an exportable list, and accelerate your outreach.
                     </p>
                 </header>
@@ -146,7 +147,7 @@ const App: React.FC = () => {
                         onUseStrategy={handleUseStrategy}
                     />
 
-                    <div className="bg-white p-6 border-4 border-black shadow-[8px_8px_0_0_#000] mb-8">
+                    <div className="bg-[#1A1A1A] bg-opacity-50 backdrop-blur-sm p-6 sm:p-8 border border-gray-800 rounded-xl shadow-2xl shadow-black/20 mb-8">
                         <LeadForm 
                             key={formKey}
                             onGenerate={handleGenerateLeads} 
@@ -161,9 +162,10 @@ const App: React.FC = () => {
                         error={error}
                         onUpdateStatus={handleUpdateLeadStatus}
                         onExport={exportToCSV}
+                        requirements={formRequirements}
                     />
                 </main>
-                 <footer className="text-center mt-12 text-black/80 text-sm">
+                 <footer className="text-center mt-16 text-gray-600 text-sm">
                     <p>&copy; {new Date().getFullYear()} LeadGen Maps. Powered by Gemini.</p>
                 </footer>
             </div>

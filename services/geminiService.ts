@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { type Lead, type GroundingChunk } from '../types';
+import { type Lead, type GroundingChunk, type VerificationResult } from '../types';
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
@@ -116,5 +116,52 @@ export const generateLeads = async ({ businessType, location, numberOfLeads, req
             throw new Error(`An error occurred while fetching leads: ${error.message}`);
         }
         throw new Error("An unknown error occurred while fetching leads.");
+    }
+};
+
+export const verifyLeadRequirement = async (businessName: string, websiteUrl: string, requirement: string): Promise<VerificationResult> => {
+    const model = 'gemini-2.5-flash';
+    const prompt = `
+        As a business analyst, I need you to investigate a company.
+        - Company Name: "${businessName}"
+        - Website: ${websiteUrl}
+        - Requirement to check: "${requirement}"
+
+        Using Google Search, please:
+        1. Verify if the company meets the requirement based on information from their website or other reliable online sources.
+        2. Find the single best URL on their website for a potential partner or vendor to contact them. This could be a "Contact Us", "Partnerships", "Get a Quote", or similar page. Do not provide a generic homepage or social media link unless it's the only contact method.
+
+        Return your findings as a single, valid JSON object ONLY. The JSON object should have these exact keys:
+        - "meetsRequirement": a boolean (true or false).
+        - "justification": a concise string (max 25 words) explaining your reasoning.
+        - "applicationUrl": the specific contact URL you found, or null if no suitable link was found.
+
+        Example response:
+        {"meetsRequirement": true, "justification": "Their website's menu clearly lists 'vegan options' which matches the requirement.", "applicationUrl": "https://example.com/contact-us"}
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: {
+                tools: [{ googleSearch: {} }],
+            },
+        });
+
+        const textResponse = response.text.trim();
+        // Extract JSON from the response, which might be wrapped in markdown
+        const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            return JSON.parse(jsonMatch[0]) as VerificationResult;
+        }
+        throw new Error("AI response was not in the expected JSON format.");
+
+    } catch (error) {
+        console.error("Error verifying lead requirement:", error);
+        if (error instanceof Error) {
+            throw new Error(`AI verification failed: ${error.message}`);
+        }
+        throw new Error("An unknown error occurred during lead verification.");
     }
 };

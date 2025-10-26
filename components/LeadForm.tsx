@@ -12,7 +12,7 @@ interface LeadFormProps {
 
 const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData }) => {
     const [businessType, setBusinessType] = useState<string>(initialData?.businessType || 'Boutique Hotels');
-    const [location, setLocation] = useState<string>(initialData?.location ||'Kyoto, Japan');
+    const [location, setLocation] = useState<string>(initialData?.location || 'Kyoto, Japan');
     const [numberOfLeads, setNumberOfLeads] = useState<number>(10);
     const [requirements, setRequirements] = useState<string>(initialData?.requirements || '');
     const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; } | undefined>(undefined);
@@ -54,11 +54,11 @@ const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-             <h2 className="text-2xl font-bold border-b-4 border-black pb-2">Step 2: Generate Leads</h2>
+             <h2 className="text-2xl font-bold border-b-2 border-gray-700 pb-3 text-gray-100">Step 2: Generate Leads</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label htmlFor="businessType" className="block text-sm font-bold text-black mb-2">
-                        Business Type <span className="text-red-600">*</span>
+                    <label htmlFor="businessType" className="block text-sm font-medium text-gray-400 mb-2">
+                        Business Type <span className="text-red-500">*</span>
                     </label>
                     <input
                         id="businessType"
@@ -66,13 +66,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData 
                         value={businessType}
                         onChange={(e) => setBusinessType(e.target.value)}
                         placeholder="e.g., Plumbers, Restaurants"
-                        className="w-full bg-white border-2 border-black rounded-none py-3 px-4 focus:ring-2 focus:ring-yellow-400 focus:border-black outline-none transition duration-200"
+                        className="w-full bg-[#121212] border-2 border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:border-[#C0A062] outline-none transition duration-200"
                         required
                     />
                 </div>
                  <div>
-                    <label htmlFor="numberOfLeads" className="block text-sm font-bold text-black mb-2">
-                        Number of Leads <span className="text-red-600">*</span>
+                    <label htmlFor="numberOfLeads" className="block text-sm font-medium text-gray-400 mb-2">
+                        Number of Leads <span className="text-red-500">*</span>
                     </label>
                     <input
                         id="numberOfLeads"
@@ -81,13 +81,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData 
                         onChange={(e) => setNumberOfLeads(Math.max(1, parseInt(e.target.value, 10) || 1))}
                         min="1"
                         max="50"
-                        className="w-full bg-white border-2 border-black rounded-none py-3 px-4 focus:ring-2 focus:ring-yellow-400 focus:border-black outline-none transition duration-200"
+                        className="w-full bg-[#121212] border-2 border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:border-[#C0A062] outline-none transition duration-200"
                         required
                     />
                 </div>
                 <div>
-                    <label htmlFor="location" className="block text-sm font-bold text-black mb-2">
-                        Location(s) <span className="text-red-600">*</span>
+                    <label htmlFor="location" className="block text-sm font-medium text-gray-400 mb-2">
+                        Location(s) <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                          <input
@@ -101,22 +101,22 @@ const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData 
                                 }
                             }}
                             placeholder="e.g., New York, NY"
-                            className="w-full bg-white border-2 border-black rounded-none py-3 px-4 pr-12 focus:ring-2 focus:ring-yellow-400 focus:border-black outline-none transition duration-200"
+                            className="w-full bg-[#121212] border-2 border-gray-700 rounded-lg py-3 px-4 pr-12 text-gray-200 focus:border-[#C0A062] outline-none transition duration-200"
                             required
                         />
                          <button 
                             type="button" 
                             onClick={handleUseMyLocation}
-                            className="absolute inset-y-0 right-0 flex items-center px-3 text-black/60 hover:text-black transition"
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-[#C0A062] transition"
                             title="Use my current location"
                         >
                             <LocationMarkerIcon className="w-5 h-5" />
                         </button>
                     </div>
-                     {locationError && <p className="text-red-600 text-xs mt-2">{locationError}</p>}
+                     {locationError && <p className="text-red-500 text-xs mt-2">{locationError}</p>}
                 </div>
                  <div>
-                    <label htmlFor="requirements" className="block text-sm font-bold text-black mb-2">
+                    <label htmlFor="requirements" className="block text-sm font-medium text-gray-400 mb-2">
                         Specific Requirements (Optional)
                     </label>
                     <input
@@ -125,14 +125,14 @@ const LeadForm: React.FC<LeadFormProps> = ({ onGenerate, isLoading, initialData 
                         value={requirements}
                         onChange={(e) => setRequirements(e.target.value)}
                         placeholder="e.g., free wifi, pet-friendly"
-                        className="w-full bg-white border-2 border-black rounded-none py-3 px-4 focus:ring-2 focus:ring-yellow-400 focus:border-black outline-none transition duration-200"
+                        className="w-full bg-[#121212] border-2 border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:border-[#C0A062] outline-none transition duration-200"
                     />
                 </div>
             </div>
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center bg-yellow-300 hover:bg-yellow-400 text-black font-bold py-3 px-4 border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] active:shadow-none transform transition-all duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
+                className="w-full flex justify-center items-center bg-[#C0A062] text-black font-bold py-3 px-4 border-2 border-black rounded-lg shadow-[4px_4px_0px_#000] hover:shadow-[1px_1px_0px_#000] active:shadow-[1px_1px_0px_#000] transform hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:shadow-none disabled:transform-none disabled:border-gray-600"
             >
                 {isLoading ? (
                     <>
