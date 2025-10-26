@@ -1,10 +1,13 @@
 import React, { useRef, useMemo } from 'react';
-// FIX: The extend(THREE) call is an outdated pattern that causes a type error. It has been removed as modern versions of react-three-fiber make THREE.js primitives available automatically.
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { type Lead } from '../types';
 import { ListIcon, GlobeIcon } from './icons';
+
+// FIX: To use THREE.js objects like <mesh> as JSX components, we must extend react-three-fiber. 
+// This resolves TypeScript errors about properties not existing on JSX.IntrinsicElements.
+extend(THREE);
 
 type ViewMode = 'list' | 'globe';
 
@@ -46,17 +49,17 @@ const Marker: React.FC<MarkerProps> = ({ position, onSelect }) => {
 
 const Earth = () => {
     const earthRef = useRef<THREE.Mesh>(null!);
-    useFrame(() => {
+    useFrame((_state, delta) => {
         // slow rotation
         if (earthRef.current) {
-            earthRef.current.rotation.y += 0.0005;
+            earthRef.current.rotation.y += 0.03 * delta;
         }
     });
 
     return (
         <mesh ref={earthRef}>
             <sphereGeometry args={[3, 64, 64]} />
-             <meshStandardMaterial color="#222222" roughness={0.9} metalness={0.1} />
+            <meshStandardMaterial color="#222222" roughness={0.9} metalness={0.1} />
         </mesh>
     )
 }
